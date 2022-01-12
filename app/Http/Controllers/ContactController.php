@@ -63,7 +63,7 @@ class ContactController extends Controller
             
         } catch (Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', $e->getMessage());
+            return redirect()->back()->with('error', $e->getPrevious()->getMessage());
         }
     }
 
@@ -75,7 +75,8 @@ class ContactController extends Controller
      */
     public function show($id)
     {
-        //
+        $contact = $this->contact->find($id);
+        return view('pages.contacts.detailContact', compact('contact'));
     }
 
     /**
@@ -119,7 +120,7 @@ class ContactController extends Controller
             
         } catch (Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', $e->getMessage());
+            return redirect()->back()->with('error', $e->getPrevious()->getMessage());
         }
     }
 

@@ -2,7 +2,7 @@
   <div class="form-row row">
     <div class="form-group col-md-4">
       <label for="name">Nome</label>
-      <input type="text" class="form-control" placeholder="Informe o nome do contato" value="{{isset($contact) ? $contact->nome : old('nome')}}" id="nome" name="nome" required>
+      <input type="text" class="form-control" minlength="5" placeholder="Informe o nome do contato" value="{{isset($contact) ? $contact->nome : old('nome')}}" id="nome" name="nome" required>
     </div>
     <div class="form-group col-md-4">
       <label for="contato">Contato</label>

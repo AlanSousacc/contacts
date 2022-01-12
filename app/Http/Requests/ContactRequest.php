@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Contact;
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -24,20 +25,19 @@ class ContactRequest extends FormRequest
      */
     public function rules()
     {
-        $id = $this->segment(3);
+        $id = $this->segment(2);
         $rules = [
             'nome'     => 'required|string|min:5',
-            'contato'  => 'required|min:9|max:9',
         ];
 
         if($this->method() == 'PUT'){
-          $rules += ['email'   => 'required', 'email',
-            Rule::unique('contacts')->ignore($this->id)
-          ];
+          $rules += ['email'   => 'required', 'email', Rule::unique('contacts')->ignore($this->id)];
+          $rules += ['contato' => 'required', 'min:9', 'max:9', 'contato', Rule::unique('contacts')->ignore($this->id)];
         } else {
-          $rules += ['email'   => 'email', "unique:contacts,email,{$id},id"];
+          $rules += ['email'   => 'email', "unique:contacts,email,{$id}id"];
+          $rules += ['contato' => "required", "min:9", "max:9", "unique:contacts,contato,{$id}id"];
         }
-    
+
         return $rules;
     }
 
@@ -50,6 +50,7 @@ class ContactRequest extends FormRequest
         'contato.required' => 'O campo Contato é obrigatório!',
         'contato.min'      => 'O campo Contato deve conter pelo menos 9 caracteres!',
         'contato.max'      => 'O campo Contato deve conter no máximo 9 caracteres!',
+        'contato.unique'   => 'Já existe um contato com este numero de contato informado!',
         'email.unique'     => 'Já existe um contato com este email informado!',
       ];
     }

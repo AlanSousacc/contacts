@@ -25,6 +25,5 @@
   </div>
 </div>
 @push('scripts')
-</script>
 @endpush
 @endsection

@@ -11,7 +11,9 @@
         <div class="card-header">
           <div class="row">
             <h4 class="card-title col-md-8">Contatos</h4>
+            @auth
             <a class="btn btn-light col-md-4" href="{{route('contacts.create')}}"> <i class='bx bx-plus'></i> Novo Contato</a>
+            @endauth
           </div>
         </div>
         <div class="card-body">
@@ -23,7 +25,9 @@
                   <th>Nome</th>
                   <th>Contato</th>
                   <th>Email</th>
+                  @auth
                   <th class="text-center">Opções</th>
+                  @endauth
                 </tr>
               </thead>
               <tbody>
@@ -33,18 +37,21 @@
                   <td>{{$item->nome}}</td>
                   <td>{{$item->contato}}</td>
                   <td>{{$item->email}}</td>
+                  @auth                      
                   <td class="text-center">
                     <div class="btn-group">
                       <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Actions
                       </button>
                       <div class="dropdown-menu">
+                        <a class="dropdown-item" href="{{route('contacts.show', $item->id)}}"><i class="bx bx-detail mr-1"></i> Detalhes do Contato</a>
                         <a class="dropdown-item" href="{{route('contacts.edit', $item->id)}}"><i class="bx bxs-edit-alt mr-1"></i> Edit Contato</a>
                         <a class="dropdown-item" href="{{$item->id}}" data-contid={{$item->id}} data-target="#delete" data-toggle="modal"><i class="bx bx-x-circle mr-1"></i> Delete Contato</a>
                       </div>
                     </div>
                   </td>
                 </tr>
+                @endauth
                 @endforeach
               </tbody>
             </table>
@@ -57,7 +64,9 @@
       </div>
     </div>
   </div>
+  @if ($contatos->count() != 0)
   @include('pages.contacts.modalExcluirContact')
+  @endif
 </div>
 @push('scripts')
 <script src='{{asset('js/javascript/generic.js')}}'></script>

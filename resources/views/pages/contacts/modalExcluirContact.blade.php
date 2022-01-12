@@ -5,7 +5,7 @@
       <div class="modal-header bg-warning">
         <h5 class="modal-title white" id="myModalLabel140">Deletar Contato</h5>
       </div>
-      <form action="{{route('contacts.destroy', isset($item) ? $item->id : '')}}" method="post">
+      <form action="{{route('contacts.destroy', isset($item) ? $item->id : $contact->id)}}" method="post">
         {{method_field('delete')}}
         {{ csrf_field() }}
         <div class="modal-body">

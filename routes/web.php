@@ -8,9 +8,10 @@ Route::get('/', function () {
 });
 
 Route::middleware(['auth'])->group(function () {
-    Route::resource('contacts', ContactController::class);
+    Route::resource('contacts', ContactController::class)->except('index');
 });
+
+Route::get('/contacts', [ContactController::class, 'index'])->name('contacts.index');
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
