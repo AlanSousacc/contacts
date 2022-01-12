@@ -2,10 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ContactRequest;
+use App\Models\Contact;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ContactController extends Controller
 {
+
+    protected $contact;
+    public function __construct(Contact $contact)
+    {
+        $this->contact = $contact;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -13,7 +24,9 @@ class ContactController extends Controller
      */
     public function index()
     {
-        //
+        $consulta = $this->contact->paginate(10);
+
+        return view('pages.contacts.listagemContacts', compact('consulta'));
     }
 
     /**
@@ -23,7 +36,7 @@ class ContactController extends Controller
      */
     public function create()
     {
-        //
+        return view('pages.contacts.createContacts');
     }
 
     /**
@@ -32,9 +45,26 @@ class ContactController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ContactRequest $request)
     {
-        //
+        $data = $request->except('_token');
+
+        try {
+            $contact = $this->contact->create($data);
+
+            DB::beginTransaction();
+            $saveContact = $contact->save();
+
+            if (!$saveContact)
+                return redirect()->back()->with('error', 'Failed to save this Contact!');
+
+            DB::commit();
+            return redirect()->route('contacts.index')->with('success', 'Contact created successfully!');
+            
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 
     /**
@@ -56,7 +86,8 @@ class ContactController extends Controller
      */
     public function edit($id)
     {
-        //
+        $contact = $this->contact->find($id);
+        return view('pages.contact.editContact', compact('contact'));
     }
 
     /**
@@ -66,9 +97,25 @@ class ContactController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(ContactRequest $request, $id)
     {
-        //
+        $data = $request->except('_token');
+
+        try {
+            DB::beginTransaction();
+            if (!$contact = $this->contact->find($id))
+                return redirect()->back()->with('error', 'No contact found');
+
+            if (!$contact->save($data))
+                return redirect()->back()->with('error', 'Failed to update this contact!');
+
+            DB::commit();
+            return redirect()->route('contacts.index')->with('success', 'Contact updated successfully!');
+            
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 
     /**
@@ -77,8 +124,20 @@ class ContactController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        //
+        try {
+            DB::beginTransaction();
+            if (!$contact = $this->contact->find($request->contact_id))
+            return redirect()->route('contacts.index')->with('error', 'No Contacts found!');        
+
+            $contact->delete();
+            DB::commit();
+            return redirect()->route('contacts.index')->with('success', 'Contact deleted successfully!');
+      
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect()->route('contacts.index')->with('error', $e->getMessage());
+        }
     }
 }
