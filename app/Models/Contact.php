@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Contact extends Model
 {
     use HasFactory;
+    use SoftDeletes;
+
+    protected $dates = [ 'deleted_at' ];
+    
+    protected $fillable = ['nome', 'contato', 'email'];
 }
