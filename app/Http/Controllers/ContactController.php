@@ -24,9 +24,9 @@ class ContactController extends Controller
      */
     public function index()
     {
-        $consulta = $this->contact->paginate(10);
+        $contatos = $this->contact->paginate(10);
 
-        return view('pages.contacts.listagemContacts', compact('consulta'));
+        return view('pages.contacts.indexContact', compact('contatos'));
     }
 
     /**
@@ -36,7 +36,7 @@ class ContactController extends Controller
      */
     public function create()
     {
-        return view('pages.contacts.createContacts');
+        return view('pages.contacts.createContact');
     }
 
     /**
@@ -56,10 +56,10 @@ class ContactController extends Controller
             $saveContact = $contact->save();
 
             if (!$saveContact)
-                return redirect()->back()->with('error', 'Failed to save this Contact!');
+                return redirect()->back()->with('error', 'Falha ao salvar este contato!');
 
             DB::commit();
-            return redirect()->route('contacts.index')->with('success', 'Contact created successfully!');
+            return redirect()->route('contacts.index')->with('success', 'Contato criado com sucesso!');
             
         } catch (Exception $e) {
             DB::rollBack();
@@ -87,7 +87,7 @@ class ContactController extends Controller
     public function edit($id)
     {
         $contact = $this->contact->find($id);
-        return view('pages.contact.editContact', compact('contact'));
+        return view('pages.contacts.editContact', compact('contact'));
     }
 
     /**
@@ -104,13 +104,18 @@ class ContactController extends Controller
         try {
             DB::beginTransaction();
             if (!$contact = $this->contact->find($id))
-                return redirect()->back()->with('error', 'No contact found');
+                return redirect()->back()->with('error', 'Nenhum contato encontrado');
 
-            if (!$contact->save($data))
-                return redirect()->back()->with('error', 'Failed to update this contact!');
+            $contact->nome     = $data['nome'];
+            $contact->contato  = $data['contato'];
+            $contact->email    = $data['email'];
+            $save              = $contact->save();
+
+            if (!$save)
+                return redirect()->back()->with('error', 'Falha ao atualizar este contato!');
 
             DB::commit();
-            return redirect()->route('contacts.index')->with('success', 'Contact updated successfully!');
+            return redirect()->route('contacts.index')->with('success', 'Contato atualizado com sucesso!');
             
         } catch (Exception $e) {
             DB::rollBack();
@@ -129,11 +134,11 @@ class ContactController extends Controller
         try {
             DB::beginTransaction();
             if (!$contact = $this->contact->find($request->contact_id))
-            return redirect()->route('contacts.index')->with('error', 'No Contacts found!');        
+            return redirect()->route('contacts.index')->with('error', 'Nenhum contato encontrado');        
 
             $contact->delete();
             DB::commit();
-            return redirect()->route('contacts.index')->with('success', 'Contact deleted successfully!');
+            return redirect()->route('contacts.index')->with('success', 'Contato deletado com sucesso!');
       
         } catch (Exception $e) {
             DB::rollBack();

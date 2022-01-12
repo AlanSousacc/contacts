@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ContactRequest extends FormRequest
@@ -24,11 +25,20 @@ class ContactRequest extends FormRequest
     public function rules()
     {
         $id = $this->segment(3);
-        return [
+        $rules = [
             'nome'     => 'required|string|min:5',
             'contato'  => 'required|min:9|max:9',
-            'email'   => ['email', "unique:contatos,email,{$id},id"],
         ];
+
+        if($this->method() == 'PUT'){
+          $rules += ['email'   => 'required', 'email',
+            Rule::unique('contacts')->ignore($this->id)
+          ];
+        } else {
+          $rules += ['email'   => 'email', "unique:contacts,email,{$id},id"];
+        }
+    
+        return $rules;
     }
 
     public function messages()
